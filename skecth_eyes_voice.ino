@@ -567,6 +567,44 @@ void draw_heart()
   delay(2000);
 }
 
+void countdown(int seconds) {
+  for (int i = seconds; i > 0; i--) {
+    display.clearDisplay();
+    display.setTextSize(4);          // Large digits
+    display.setTextColor(SSD1306_WHITE);
+
+    // Estimate text width: 6 pixels per char * size (roughly 24 per digit at size 4)
+    int textWidth = (i < 10) ? 24 : 48;
+    int x = (SCREEN_WIDTH - textWidth) / 2;   // center horizontally
+    int y = (SCREEN_HEIGHT - 32) / 2;         // roughly vertical center
+
+    display.setCursor(x, y);
+    display.print(i);
+    display.display();
+
+    // Optional beep each second
+    tone(buzzer, 700, 100);
+    delay(900);
+  }
+
+  // Show "GO!" at the end
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(SSD1306_WHITE);
+
+  int textWidth = 6 * 2 * 3; // "GO!" ~3 chars, 6px each, size 2
+  int x = (SCREEN_WIDTH - textWidth) / 2;
+  int y = (SCREEN_HEIGHT - 16) / 2;
+
+  display.setCursor(x, y);
+  display.print("GO!");
+  display.display();
+
+  tone(buzzer, 1000, 300);
+  delay(1000);
+}
+
+
 
 
 
@@ -767,6 +805,23 @@ void happy_sound(){
   noTone(buzzer);
 }
 
+
+// ─────────────── ACTIVE VOICE COMMANDS ───────────────
+//  ID    Command Phrase              →   Function
+//  ----------------------------------------------------
+//   1    (custom internal)           →   happy_eye(), demo_mode = 3
+//   2    (custom internal)           →   happy_eye(), demo_mode = 2
+//   5    (custom internal)           →   sleeping_eye(), sleep()
+//  57    Display number five         →   countdown(5)
+//  62    Display smiley face         →   happy_eye()
+//  63    Display crying face         →   sad_eye()
+//  64    Display heart               →   heart_eye()
+// 103    Turn on the light           →   happy_eye()
+// 104    Turn off the light          →   demo_mode = 2
+// 116    Set to red                  →   angry_eye()
+// ─────────────────────────────────────────────────────
+
+
 void loop() {
 
   // put your main code here, to run repeatedly:
@@ -790,6 +845,12 @@ void loop() {
       demo_mode = 2;                                                               
       break;
 
+    case 62:
+      happy_eye();
+      delay(500);
+      demo_mode = 2;                                                                         
+      break;
+
     case 63:
       sad_eye();
       delay(500);
@@ -808,6 +869,8 @@ void loop() {
 
     case 64:
       demo_mode = 0;
+      flirtive_eye();
+      delay(200);
       heart_eye();
       Serial.println("H',command flag'64");
       delay(1500);                                                                
@@ -822,6 +885,10 @@ void loop() {
     case 104:
       demo_mode = 2;                                                
       Serial.println("received'Turn off the light',command flag'104'");  
+      break;
+
+    case 57:
+      countdown(5);
       break;
 
     default:
