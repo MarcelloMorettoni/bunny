@@ -13,6 +13,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 // Input
 const uint8_t BUTTON_PIN = 2;
 const unsigned long BUTTON_DEBOUNCE_MS = 50;
+const unsigned long BUTTON_LONG_PRESS_MS = 5000;
 
 // Reference eye geometry
 static const int ref_eye_height = 40;
@@ -37,6 +38,8 @@ const unsigned long RANDOM_INTERVAL_MS = 4000;
 bool lastButtonReading = HIGH;
 bool debouncedButtonState = HIGH;
 unsigned long lastButtonChange = 0;
+unsigned long buttonPressStart = 0;
+bool longPressHandled = false;
 
 void drawEyes()
 {
@@ -288,15 +291,31 @@ void handleButton()
     lastButtonReading = rawReading;
   }
 
-  if ((millis() - lastButtonChange) > BUTTON_DEBOUNCE_MS) {
+  unsigned long now = millis();
+  if ((now - lastButtonChange) > BUTTON_DEBOUNCE_MS) {
     if (debouncedButtonState != rawReading) {
       debouncedButtonState = rawReading;
 
       if (debouncedButtonState == LOW) { // button pressed (active low)
-        randomMode = false;
-        currentExpression = (currentExpression + 1) % EXPRESSION_COUNT;
-        playCurrentExpression();
+        buttonPressStart = now;
+        longPressHandled = false;
+      } else { // button released
+        if (!longPressHandled) {
+          currentExpression = (currentExpression + 1) % EXPRESSION_COUNT;
+          playCurrentExpression();
+          if (randomMode) {
+            lastRandomChange = now;
+          }
+        }
       }
+    }
+
+    if (debouncedButtonState == LOW && !longPressHandled &&
+        (now - buttonPressStart) >= BUTTON_LONG_PRESS_MS) {
+      randomMode = true;
+      playRandomExpression();
+      lastRandomChange = now;
+      longPressHandled = true;
     }
   }
 }
