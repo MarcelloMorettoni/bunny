@@ -1,5 +1,7 @@
 # Bunny OLED Expression Controller
 
+![alt text](face.jpeg)
+
 This project drives a pair of animated "eyes" on a 128×64 I²C SSD1306 OLED display. A push button cycles through several predefined expressions, while a long press returns the device to automatic random playback.
 
 ## Features
