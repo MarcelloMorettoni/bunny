@@ -174,31 +174,43 @@ void tiredEye()
   delay(1000);
 }
 
-void flirtiveEye()
-{
+
+void heart_eye() {
   centerEyes();
-  int offset = -ref_eye_height / 6;
-  for (int i = 0; i < 10; ++i) {
-    display.fillRect(left_eye_x - left_eye_width / 2 - 1, left_eye_y + offset,
-                     left_eye_width + 2, left_eye_height / 3, SSD1306_BLACK);
+  int size = 6; // heart size
+  int steps = 5; // animation smoothness
 
-    display.fillTriangle(right_eye_x - right_eye_width / 2 - 1, right_eye_y + offset,
-                         right_eye_x + right_eye_width / 2 + 1, right_eye_y + 5 + offset,
-                         right_eye_x - right_eye_width / 2 - 1, right_eye_y + left_eye_height / 2 + offset,
-                         SSD1306_BLACK);
+  // optional: clear old shapes to avoid mix
+  display.clearDisplay();
+  display.display();
 
-    display.drawLine(left_eye_x - left_eye_width / 2 + 2, left_eye_y - 2,
-                     left_eye_x - left_eye_width / 2 + 6, left_eye_y - 6,
-                     SSD1306_BLACK);
-    display.drawLine(left_eye_x + left_eye_width / 2 - 2, left_eye_y - 2,
-                     left_eye_x + left_eye_width / 2 - 6, left_eye_y - 6,
-                     SSD1306_BLACK);
-    offset -= 1;
+  for (int i = 0; i < steps; i++) {
+    // fade-in or build hearts gradually
+    int grow = i; // or use sin/cos for pulse later
+
+    int lx = left_eye_x;
+    int ly = left_eye_y;
+    display.fillCircle(lx - size/2 - grow, ly - size/2 - grow, size/2 + grow, SSD1306_WHITE);
+    display.fillCircle(lx + size/2 + grow, ly - size/2 - grow, size/2 + grow, SSD1306_WHITE);
+    display.fillTriangle(lx - size - 1 - grow, ly - size/4 - grow,
+                         lx + size + 1 + grow, ly - size/4 - grow,
+                         lx, ly + size + 2 + grow, SSD1306_WHITE);
+
+    int rx = right_eye_x;
+    int ry = right_eye_y;
+    display.fillCircle(rx - size/2 - grow, ry - size/2 - grow, size/2 + grow, SSD1306_WHITE);
+    display.fillCircle(rx + size/2 + grow, ry - size/2 - grow, size/2 + grow, SSD1306_WHITE);
+    display.fillTriangle(rx - size - 1 - grow, ry - size/4 - grow,
+                         rx + size + 1 + grow, ry - size/4 - grow,
+                         rx, ry + size + 2 + grow, SSD1306_WHITE);
+
     display.display();
-    delay(15);
+    delay(60);
   }
-  delay(1000);
+
+  delay(1200);  // hold hearts visible
 }
+
 
 void centerPose()
 {
@@ -228,7 +240,7 @@ ExpressionFn expressions[] = {
   sadEye,
   angryEye,
   tiredEye,
-  flirtiveEye
+  heart_eye
 };
 
 const uint8_t EXPRESSION_COUNT = sizeof(expressions) / sizeof(expressions[0]);
