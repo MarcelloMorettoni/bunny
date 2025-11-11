@@ -1,6 +1,6 @@
 # Bunny OLED Expression Controller
 
-![drawing](face.jpeg){ width=512px }
+<img src="face.jpeg" alt="drawing" width="512" height="512">
 
 This project drives a pair of animated "eyes" on a 128×64 I²C SSD1306 OLED display. A push button cycles through several predefined expressions, while a long press returns the device to automatic random playback.
 
