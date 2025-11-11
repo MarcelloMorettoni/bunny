@@ -297,10 +297,12 @@ void handleButton()
       debouncedButtonState = rawReading;
 
       if (debouncedButtonState == LOW) { // button pressed (active low)
+        Serial.println(F("button pushed for debug purposes."));
         buttonPressStart = now;
         longPressHandled = false;
       } else { // button released
         if (!longPressHandled) {
+          randomMode = false;
           currentExpression = (currentExpression + 1) % EXPRESSION_COUNT;
           playCurrentExpression();
           if (randomMode) {
