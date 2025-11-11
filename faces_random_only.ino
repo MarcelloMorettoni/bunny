@@ -13,7 +13,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 // Input
 const uint8_t BUTTON_PIN = 2;
 const unsigned long BUTTON_DEBOUNCE_MS = 50;
-const unsigned long BUTTON_LONG_PRESS_MS = 5000;
+const unsigned long BUTTON_LONG_PRESS_MS = 3000;
 
 // Reference eye geometry
 static const int ref_eye_height = 40;
