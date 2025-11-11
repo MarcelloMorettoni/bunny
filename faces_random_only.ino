@@ -283,44 +283,62 @@ void handleSerial()
   }
 }
 
-void handleButton()
-{
+void handleButton() {
   bool rawReading = digitalRead(BUTTON_PIN);
+  unsigned long now = millis();
+
+  // --- Debounce ---
   if (rawReading != lastButtonReading) {
-    lastButtonChange = millis();
+    lastButtonChange = now;
     lastButtonReading = rawReading;
   }
 
-  unsigned long now = millis();
+  // --- Process stable input ---
   if ((now - lastButtonChange) > BUTTON_DEBOUNCE_MS) {
     if (debouncedButtonState != rawReading) {
       debouncedButtonState = rawReading;
 
-      if (debouncedButtonState == LOW) { // button pressed (active low)
-        Serial.println(F("button pushed for debug purposes."));
+      if (debouncedButtonState == LOW) {
+        // Button pressed
         buttonPressStart = now;
         longPressHandled = false;
-      } else { // button released
+      } else {
+        // Button released
         if (!longPressHandled) {
+          // Short press: go sequentially to next expression, stop random
           randomMode = false;
           currentExpression = (currentExpression + 1) % EXPRESSION_COUNT;
           playCurrentExpression();
-          if (randomMode) {
-            lastRandomChange = now;
-          }
         }
       }
     }
 
+    // --- Long press toggle (≥5s) ---
     if (debouncedButtonState == LOW && !longPressHandled &&
         (now - buttonPressStart) >= BUTTON_LONG_PRESS_MS) {
-      randomMode = true;
-      playRandomExpression();
-      lastRandomChange = now;
+      
+      Serial.println(F(">>> LONG PRESS detected"));
+
+      randomMode = !randomMode;  // toggle random mode
       longPressHandled = true;
+
+      display.clearDisplay();
+      display.setTextSize(1);
+      display.setTextColor(SSD1306_WHITE);
+      display.setCursor(0, 0);
+      if (randomMode) {
+        display.println(F("Random ON"));
+        playRandomExpression();
+        lastRandomChange = now;
+      } else {
+        display.println(F("Random OFF"));
+      }
+      display.display();
+      delay(400);
     }
   }
 }
+
 
 void setup()
 {
