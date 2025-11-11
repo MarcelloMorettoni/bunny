@@ -10,6 +10,10 @@
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+// Input
+const uint8_t BUTTON_PIN = 2;
+const unsigned long BUTTON_DEBOUNCE_MS = 50;
+
 // Reference eye geometry
 static const int ref_eye_height = 40;
 static const int ref_eye_width = 40;
@@ -30,6 +34,9 @@ int right_eye_width  = ref_eye_width;
 bool randomMode = true;           // corresponds to previous "demo_mode = 2"
 unsigned long lastRandomChange = 0;
 const unsigned long RANDOM_INTERVAL_MS = 4000;
+bool lastButtonReading = HIGH;
+bool debouncedButtonState = HIGH;
+unsigned long lastButtonChange = 0;
 
 void drawEyes()
 {
@@ -273,9 +280,34 @@ void handleSerial()
   }
 }
 
+void handleButton()
+{
+  bool rawReading = digitalRead(BUTTON_PIN);
+  if (rawReading != lastButtonReading) {
+    lastButtonChange = millis();
+    lastButtonReading = rawReading;
+  }
+
+  if ((millis() - lastButtonChange) > BUTTON_DEBOUNCE_MS) {
+    if (debouncedButtonState != rawReading) {
+      debouncedButtonState = rawReading;
+
+      if (debouncedButtonState == LOW) { // button pressed (active low)
+        randomMode = false;
+        currentExpression = (currentExpression + 1) % EXPRESSION_COUNT;
+        playCurrentExpression();
+      }
+    }
+  }
+}
+
 void setup()
 {
   Serial.begin(115200);
+
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  lastButtonReading = digitalRead(BUTTON_PIN);
+  debouncedButtonState = lastButtonReading;
 
   if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
     for (;;)
@@ -300,6 +332,7 @@ void setup()
 void loop()
 {
   handleSerial();
+  handleButton();
 
   if (randomMode) {
     unsigned long now = millis();
