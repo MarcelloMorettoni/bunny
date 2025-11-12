@@ -163,25 +163,62 @@ void saccade(int direction_x, int direction_y)
   delay(60);
 }
 
+void shuffleDirections(uint8_t *directions, uint8_t count)
+{
+  for (int i = count - 1; i > 0; --i) {
+    int j = random(i + 1);
+    uint8_t tmp = directions[i];
+    directions[i] = directions[j];
+    directions[j] = tmp;
+  }
+}
+
+void glanceInDirection(int dx, int dy)
+{
+  saccade(dx, dy);
+  delay(random(120, 240));
+  centerEyes();
+  delay(random(180, 320));
+}
+
+void performRandomGlances(uint8_t glanceCount)
+{
+  if (glanceCount == 0) {
+    centerEyes();
+    delay(random(220, 360));
+    return;
+  }
+
+  uint8_t directions[3] = {0, 1, 2}; // 0: left, 1: right, 2: up
+  uint8_t completed = 0;
+
+  centerEyes();
+  delay(random(140, 260));
+
+  while (completed < glanceCount) {
+    shuffleDirections(directions, 3);
+    for (uint8_t i = 0; i < 3 && completed < glanceCount; ++i) {
+      switch (directions[i]) {
+        case 0:
+          glanceInDirection(-1, 0);
+          break;
+        case 1:
+          glanceInDirection(1, 0);
+          break;
+        default:
+          glanceInDirection(0, -1);
+          break;
+      }
+      ++completed;
+    }
+  }
+
+  delay(random(360, 640));
+}
+
 void lookAround()
 {
-  centerEyes();
-  delay(120);
-
-  saccade(1, 0);
-  delay(200);
-  saccade(-1, 0);
-  delay(160);
-  saccade(-1, 0);
-  delay(220);
-  saccade(1, 0);
-  delay(200);
-  saccade(0, -1);
-  delay(150);
-  saccade(0, 1);
-
-  centerEyes();
-  delay(400);
+  performRandomGlances(random(2, 4));
 }
 
 void angryEye()
@@ -270,8 +307,7 @@ void heart_eye() {
 
 void centerPose()
 {
-  centerEyes();
-  delay(1000);
+  performRandomGlances(random(1, 3));
 }
 
 void blinkSlow()
