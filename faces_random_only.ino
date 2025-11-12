@@ -138,6 +138,52 @@ void sadEye()
   delay(1000);
 }
 
+void saccade(int direction_x, int direction_y)
+{
+  const int direction_x_movement_amplitude = 8;
+  const int direction_y_movement_amplitude = 6;
+  const int blink_amplitude = 8;
+
+  left_eye_x  += direction_x_movement_amplitude * direction_x;
+  right_eye_x += direction_x_movement_amplitude * direction_x;
+  left_eye_y  += direction_y_movement_amplitude * direction_y;
+  right_eye_y += direction_y_movement_amplitude * direction_y;
+  right_eye_height -= blink_amplitude;
+  left_eye_height  -= blink_amplitude;
+  drawEyes();
+  delay(40);
+
+  left_eye_x  += direction_x_movement_amplitude * direction_x;
+  right_eye_x += direction_x_movement_amplitude * direction_x;
+  left_eye_y  += direction_y_movement_amplitude * direction_y;
+  right_eye_y += direction_y_movement_amplitude * direction_y;
+  right_eye_height += blink_amplitude;
+  left_eye_height  += blink_amplitude;
+  drawEyes();
+  delay(60);
+}
+
+void lookAround()
+{
+  centerEyes();
+  delay(120);
+
+  saccade(1, 0);
+  delay(200);
+  saccade(-1, 0);
+  delay(160);
+  saccade(-1, 0);
+  delay(220);
+  saccade(1, 0);
+  delay(200);
+  saccade(0, -1);
+  delay(150);
+  saccade(0, 1);
+
+  centerEyes();
+  delay(400);
+}
+
 void angryEye()
 {
   centerEyes();
@@ -250,7 +296,8 @@ ExpressionFn expressions[] = {
   sadEye,
   angryEye,
   tiredEye,
-  heart_eye
+  heart_eye,
+  lookAround
 };
 
 const uint8_t EXPRESSION_COUNT = sizeof(expressions) / sizeof(expressions[0]);
