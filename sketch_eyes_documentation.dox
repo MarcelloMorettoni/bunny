@@ -1,0 +1,351 @@
+/**
+ * @function setup
+ * @brief Initializes display, buzzer, and serial interfaces for the Cute Eyes sketch.
+ *
+ * @details
+ * Boots the SSD1306 OLED display, plays a startup tone sequence, displays a welcome
+ * message with diagonal scrolling, and positions the eyes before entering animations.
+ *
+ * @ai_tags initialization, hardware, oled, buzzer
+ * @ai_purpose "Prepare the hardware state for subsequent eye animations."
+ * @context "Called once by Arduino runtime during power-up or reset."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function loop
+ * @brief Drives demo animations or random eye behaviors every frame.
+ *
+ * @details
+ * Serves as the Arduino main loop that either cycles through scripted animations or
+ * triggers randomized eye reactions depending on the selected demo mode.
+ *
+ * @ai_tags control-flow, animation, randomness
+ * @ai_purpose "Continuously animate the face to keep expressions lively."
+ * @context "Invoked repeatedly after setup by the Arduino runtime."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function center_eyes
+ * @brief Resets both eyes to their reference positions and dimensions.
+ *
+ * @details
+ * Aligns the left and right eyes to the middle of the screen using stored reference
+ * geometry, then redraws them optionally updating the OLED buffer.
+ *
+ * @ai_tags alignment, positioning, geometry
+ * @ai_purpose "Return the face to a neutral, forward-looking gaze."
+ * @context "Used prior to expression changes to normalize the eye coordinates."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function draw_eyes
+ * @brief Renders the current eye rectangles on the OLED display.
+ *
+ * @details
+ * Clears the screen, draws filled rounded rectangles based on the current eye
+ * dimensions and positions, and optionally flushes the buffer to the panel.
+ *
+ * @ai_tags rendering, oled, graphics
+ * @ai_purpose "Visualize the active eye state for the current frame."
+ * @context "Called whenever eye geometry changes to reflect new expressions."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function blink
+ * @brief Simulates eyelid closure and optional blink sound.
+ *
+ * @details
+ * Animates the eye height contracting and expanding over several frames while emitting
+ * a two-tone beep if enabled, creating a natural blink effect.
+ *
+ * @ai_tags animation, eyelids, audio
+ * @ai_purpose "Mimic natural blinking to add lifelike motion."
+ * @context "Triggered during idle animations or by random behavior routines."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function sleep
+ * @brief Displays a closed-eye resting pose.
+ *
+ * @details
+ * Shrinks both eyes to thin horizontal slits and draws them to the OLED, signalling a
+ * sleeping or powered-down demeanor.
+ *
+ * @ai_tags expression, rest, animation
+ * @ai_purpose "Convey low-activity or standby states."
+ * @context "Used in demo sequences before wakeup transitions."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function wakeup
+ * @brief Gradually opens the eyes from a closed state.
+ *
+ * @details
+ * Begins from the sleep pose and iteratively increases the eye height until reaching
+ * the reference dimensions, creating a smooth wake-up animation.
+ *
+ * @ai_tags animation, transition, wake
+ * @ai_purpose "Animate the character returning to an alert state."
+ * @context "Paired with sleep() to bracket demo introductions and resets."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function happy_eye
+ * @brief Depicts smiling eyes using inverted triangles.
+ *
+ * @details
+ * Re-centers the eyes then overlays downward-facing triangles to carve out arcs that
+ * mimic a cheerful squint, refreshing the display during the transition.
+ *
+ * @ai_tags emotion, happiness, oled
+ * @ai_purpose "Express joy or positive feedback through eye shape."
+ * @context "Selected via animation index or random routines for upbeat moments."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function sad_eye
+ * @brief Crafts a sorrowful gaze with angled brows and lower lines.
+ *
+ * @details
+ * Positions triangular fills above each eye to slope the brows upward and draws
+ * horizontal lines across the lower eye area to emphasize sadness.
+ *
+ * @ai_tags emotion, sadness, brow-control
+ * @ai_purpose "Convey melancholy or sympathy visually."
+ * @context "Invoked from the animation switch-case when sadness is requested."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function angry_eye
+ * @brief Creates an intense glare with sharp brow angles.
+ *
+ * @details
+ * Builds upon centered eyes by sweeping dark triangles downward from the brow region
+ * while optionally playing a siren tone to heighten urgency.
+ *
+ * @ai_tags emotion, anger, alert
+ * @ai_purpose "Signal high alert or defensive responses."
+ * @context "Triggered by animation index 11 or contextual alerts."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function tired_eye
+ * @brief Presents drooping eyelids and under-eye lines.
+ *
+ * @details
+ * Centers the eyes, then repeatedly lowers rectangular eyelids and sketches small
+ * fatigue marks beneath each eye to emulate exhaustion.
+ *
+ * @ai_tags emotion, fatigue, eyelids
+ * @ai_purpose "Express low-energy or sleepy demeanor."
+ * @context "Callable through the animation dispatcher for rest states."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function flirtive_eye
+ * @brief Animates half-closed eyes and lashes for playful expression.
+ *
+ * @details
+ * Draws a lowered eyelid over the left eye, shapes the right eye into a wink, and adds
+ * stylized eyelashes while gradually adjusting offsets to imply motion.
+ *
+ * @ai_tags emotion, flirt, playful
+ * @ai_purpose "Communicate charm or lighthearted interaction cues."
+ * @context "Assigned to animation index 12 for social engagement routines."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function heart_eye
+ * @brief Replaces pupils with animated heart symbols.
+ *
+ * @details
+ * Clears the display, then iteratively draws paired circles and triangles forming
+ * hearts over each eye position, gradually increasing size for a pulsing effect.
+ *
+ * @ai_tags emotion, love, animation
+ * @ai_purpose "Show affection or excitement through iconic hearts."
+ * @context "Available for romantic or celebratory triggers."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function draw_heart
+ * @brief Displays a standalone heart glyph in the screen center.
+ *
+ * @details
+ * Clears the OLED, positions the cursor, writes the Adafruit font heart character, and
+ * holds the pose before returning to other animations.
+ *
+ * @ai_tags iconography, glyph, display
+ * @ai_purpose "Provide a simple heart symbol outside the eye canvas."
+ * @context "Optional supportive graphic for emotion routines."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function saccade
+ * @brief Performs rapid eye jumps with slight blinking.
+ *
+ * @details
+ * Adjusts eye centers by configured amplitudes along X and Y, temporarily narrows the
+ * eye height to mimic a blink, and leaves the eyes offset to emulate darting glances.
+ *
+ * @ai_tags eye-motion, saccade, attention
+ * @ai_purpose "Simulate quick gaze shifts for attentive behavior."
+ * @context "Used within random saccade loops and surprise reactions."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function move_big_eye
+ * @brief Slides both eyes laterally while enlarging the leading eye.
+ *
+ * @details
+ * Sequentially offsets the eye positions horizontally, alters heights for a blink
+ * effect, and scales the forward-looking eye to accentuate direction before resetting.
+ *
+ * @ai_tags parallax, emphasis, motion
+ * @ai_purpose "Highlight gaze direction with asymmetrical sizing."
+ * @context "Wrapper helpers move_left_big_eye() and move_right_big_eye() call this."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function move_left_big_eye
+ * @brief Convenience wrapper that calls move_big_eye with leftward motion.
+ *
+ * @details
+ * Passes a negative direction parameter to move_big_eye() to bias the left eye as the
+ * leading focal point of the animation.
+ *
+ * @ai_tags wrapper, motion, left
+ * @ai_purpose "Offer readable access for leftward gaze sequences."
+ * @context "Referenced in switch-case animations and random selection."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function move_right_big_eye
+ * @brief Convenience wrapper that calls move_big_eye with rightward motion.
+ *
+ * @details
+ * Invokes move_big_eye() with a positive direction to enlarge the right eye and sweep
+ * gaze to the right side of the display before re-centering.
+ *
+ * @ai_tags wrapper, motion, right
+ * @ai_purpose "Provide a semantic helper for rightward gaze."
+ * @context "Used when the animation script requests right-side emphasis."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function siren_alert
+ * @brief Emits a rapid pitch-sweeping siren tone.
+ *
+ * @details
+ * Iterates through frequency sweeps four times to produce an urgent auditory alert via
+ * the buzzer connected to pin 11.
+ *
+ * @ai_tags audio, alert, siren
+ * @ai_purpose "Accompany intense visual expressions with sound."
+ * @context "Designed to pair with angry_eye or emergency scenarios."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function countdown
+ * @brief Presents a numeric countdown with beeps followed by a "GO!" message.
+ *
+ * @details
+ * Renders centered digits in large typography for each second, plays a short tone per
+ * tick, and finishes with a celebratory beep and message.
+ *
+ * @ai_tags timing, user-feedback, audio
+ * @ai_purpose "Provide temporal cues before an activity begins."
+ * @context "Optional helper for games or timed interactions."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function launch_animation_with_index
+ * @brief Dispatches expression routines based on a numeric selector.
+ *
+ * @details
+ * Validates the requested index against available animations and calls the
+ * corresponding function, including wake, blinks, emotions, saccades, and more.
+ *
+ * @ai_tags dispatcher, control, animation
+ * @ai_purpose "Centralize animation selection for demos and scripts."
+ * @context "Invoked during demo loops to iterate through expressions."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
+
+/**
+ * @function randomizeFunction
+ * @brief Chooses and runs a random eye behavior.
+ *
+ * @details
+ * Seeds the pseudo-random generator, picks from a subset of foundational animations,
+ * and executes the selected routine to keep the face dynamic.
+ *
+ * @ai_tags randomness, behavior, variety
+ * @ai_purpose "Inject spontaneous motion when idle."
+ * @context "Called from loop() when demo_mode equals 2."
+ * @author @marcellomorettoni
+ * @version 1.3
+ * @module cute_eyes
+ */
