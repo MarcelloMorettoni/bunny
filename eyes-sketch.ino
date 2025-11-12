@@ -42,12 +42,20 @@ const uint8_t BUTTON_PIN = 2;
 const unsigned long BUTTON_DEBOUNCE_MS = 50;
 const unsigned long BUTTON_LONG_PRESS_MS = 3000;
 
-// states for demo 
+// states for demo
 int demo_mode = 2;
 int sleeping_mode = 0;
 static const int max_animation_index = 12;
 int current_animation_index = 0;
 int blink_sound = 1;
+uint8_t manual_expression_index = 0;
+
+// button state tracking
+int last_button_reading = HIGH;
+int button_state = HIGH;
+unsigned long last_button_change_ms = 0;
+unsigned long button_press_start_ms = 0;
+bool button_long_press_handled = false;
 //reference state
 int ref_eye_height = 40;
 int ref_eye_width = 40;
@@ -572,6 +580,82 @@ void flirtive_eye()
   delay(1000);
 }
 
+void expression_center_eyes() { center_eyes(true); }
+void expression_blink() { blink(); }
+void expression_sleep() { sleep(); }
+void expression_happy() { happy_eye(); }
+void expression_tired() { tired_eye(); }
+void expression_heart() { heart_eye(); }
+void expression_sad() { sad_eye(); }
+void expression_angry() { angry_eye(); }
+void expression_sleeping() { sleeping_eye(); }
+void expression_flirtive() { flirtive_eye(); }
+
+typedef void (*ExpressionFunc)();
+const ExpressionFunc manualExpressions[] = {
+  expression_center_eyes,
+  expression_blink,
+  expression_sleep,
+  expression_happy,
+  expression_tired,
+  expression_heart,
+  expression_sad,
+  expression_angry,
+  expression_sleeping,
+  expression_flirtive
+};
+const uint8_t manualExpressionCount = sizeof(manualExpressions) / sizeof(manualExpressions[0]);
+
+void showCurrentManualExpression() {
+  manualExpressions[manual_expression_index]();
+}
+
+void handleShortPress() {
+  if (demo_mode == 2) {
+    demo_mode = 0;
+    manual_expression_index = 0;
+  } else {
+    manual_expression_index = (manual_expression_index + 1) % manualExpressionCount;
+  }
+
+  showCurrentManualExpression();
+}
+
+void handleLongPress() {
+  if (demo_mode != 2) {
+    demo_mode = 2;
+  }
+  button_long_press_handled = true;
+}
+
+void updateButtonState() {
+  int reading = digitalRead(BUTTON_PIN);
+  unsigned long now = millis();
+
+  if (reading != last_button_reading) {
+    last_button_change_ms = now;
+    last_button_reading = reading;
+  }
+
+  if ((now - last_button_change_ms) > BUTTON_DEBOUNCE_MS) {
+    if (reading != button_state) {
+      button_state = reading;
+      if (button_state == LOW) {
+        button_press_start_ms = now;
+        button_long_press_handled = false;
+      } else {
+        if (!button_long_press_handled && (now - button_press_start_ms) < BUTTON_LONG_PRESS_MS) {
+          handleShortPress();
+        }
+      }
+    }
+
+    if (button_state == LOW && !button_long_press_handled && (now - button_press_start_ms) >= BUTTON_LONG_PRESS_MS) {
+      handleLongPress();
+    }
+  }
+}
+
 void draw_heart()
 {
   display.clearDisplay();
@@ -623,6 +707,7 @@ void setup() {
 
   // put your setup code here, to run once:
   pinMode(buzzer, OUTPUT);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
 
   tone(buzzer, 400,50);
   delay(100);
@@ -767,7 +852,8 @@ void randomizeFunction() {
 }
 
 void loop() {
- 
+  updateButtonState();
+
 //  if(demo_mode == 1)
 //  {
     // cycle animations
@@ -786,12 +872,19 @@ void loop() {
   //angry_eye();
   //flirtive_eye();
   //delay(1000);
-  //draw_heart(); 
+  //draw_heart();
   //play_melody();
   if(demo_mode == 2)
   {
     randomizeFunction();
-    delay(1000); // Delay to prevent rapid function calls
+    unsigned long wait_start = millis();
+    while (demo_mode == 2 && (millis() - wait_start) < 1000)
+    {
+      updateButtonState();
+      delay(5);
+    }
+  } else {
+    delay(5);
   }
 
 
