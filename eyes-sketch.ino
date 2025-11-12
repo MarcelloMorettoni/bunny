@@ -9,7 +9,7 @@
  * @date 2025-11-12
  */
 
-#include <SPI.h>
+//#include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -36,6 +36,11 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
       //                             uint32_t bitrate)
 
 // mic
+
+// Input
+const uint8_t BUTTON_PIN = 2;
+const unsigned long BUTTON_DEBOUNCE_MS = 50;
+const unsigned long BUTTON_LONG_PRESS_MS = 3000;
 
 // states for demo 
 int demo_mode = 2;
@@ -87,7 +92,7 @@ void draw_eyes(bool update=true)
     
 }
 
-
+// Face expression: Center eyes
 void center_eyes(bool update=true)
 {
   //move eyes to the center of the display, defined by SCREEN_WIDTH, SCREEN_HEIGHT
@@ -104,6 +109,7 @@ void center_eyes(bool update=true)
   draw_eyes(update);
 }
 
+// Face expression: Blink
 void blink(int speed=12)
 {
   draw_eyes();
@@ -134,7 +140,7 @@ void blink(int speed=12)
   }
 }
 
-
+// Face expression: Sleep
 void sleep()
 {
   left_eye_height = 2;
@@ -156,7 +162,7 @@ void wakeup()
 
 }
 
-
+// Face expression: Happy
 void happy_eye()
 {
   center_eyes(false);
@@ -180,6 +186,7 @@ void happy_eye()
   delay(1000);
 }
 
+// Face expression base code: Eyes moves from left to right. Looking around.
 void saccade(int direction_x, int direction_y)
 {
   //quick movement of the eye, no size change. stay at position after movement, will not move back,  call again with opposite direction
@@ -319,8 +326,7 @@ void move_big_eye(int direction)
 
 }
 
-//Here new eye functions start, created by my own
-
+// Face expression: Tired eyes.
 void tired_eye()
 {
   center_eyes(false);
@@ -349,7 +355,7 @@ void tired_eye()
   display.display();
   delay(1000);
 }
-
+// Face expression: Heart eyes
 void heart_eye() {
   center_eyes(false);
   int size = 6; // heart size
@@ -386,7 +392,7 @@ void heart_eye() {
   delay(1200);  // hold hearts visible
 }
 
-
+// Face expression: sad
 void sad_eye()
 {
   center_eyes(false);
@@ -433,7 +439,7 @@ void sad_eye()
   display.display();
   delay(1000);
 }
-
+// Face expression: angry
 void angry_eye()
 {
   center_eyes(false);
@@ -480,7 +486,7 @@ void angry_eye()
   display.display();
   delay(1000);
 }
-
+// Face expression: sleeping
 void sleeping_eye()
 {
   center_eyes(false);
@@ -517,7 +523,7 @@ void sleeping_eye()
   display.display();
   delay(2000);
 }
-
+// Face expression: flirtive
 void flirtive_eye()
 {
   center_eyes(false);
