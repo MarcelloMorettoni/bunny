@@ -1,3 +1,14 @@
+/**
+ * @project Cute Eyes Animation
+ * @description Arduino-based OLED facial animation system for humanoid robots.
+ * @hardware Adafruit SSD1306 OLED (128x64), buzzer pin 11.
+ * @author @marcellomorettoni
+ * @ai_module visual_expressions
+ * @ai_purpose "Provides emotional and expressive feedback through eyes."
+ * @version 1.3
+ * @date 2025-11-12
+ */
+
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
