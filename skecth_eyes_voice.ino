@@ -782,36 +782,7 @@ void launch_animation_with_index(int animation_index)
       }
 }
 
-void randomizeFunction() {
-    // Initialize random seed (using an analog pin for randomness)
-    randomSeed(analogRead(0));
 
-    // Generate a random number between 1 and 8
-    int randomChoice = random(0, 5);
-
-    // Call a function based on the random number
-    switch (randomChoice) {
-        case 0:
-          center_eyes(true);
-          break;
-        case 1:
-          move_right_big_eye();
-          break;
-        case 2:
-          move_left_big_eye();
-          break;
-        case 3:      
-          blink(10);
-          blink(10);
-          break;
-        case 4:
-          blink(20);
-          break;
-//        case 5:
-//          tired_eye();
-//          delay(1000);
-    }
-}
 
 
 
@@ -883,6 +854,39 @@ void dinner_time(int x_offset = 0, int y_offset = 0) {
   display.display();
 }
 
+void flirt(int speed = 12) {
+
+  // Start from normal face
+  draw_eyes();
+
+  // ------- Closing Phase -------
+  for (int i = 0; i < 3; i++) {
+    // Left eye closes fully
+    left_eye_height -= speed;
+
+    // Right eye closes just a little (half wink)
+    right_eye_height -= speed / 3;
+
+    draw_eyes();
+    delay(20);
+  }
+
+  // ------- Pause for expression -------
+  delay(120); // gives it attitude 😏
+
+
+  // ------- Opening Phase -------
+  for (int i = 0; i < 3; i++) {
+    left_eye_height += speed;
+    right_eye_height += speed / 3;
+    
+    draw_eyes();
+    delay(20);
+  }
+
+  // return to normal
+  draw_eyes();
+}
 
 // ─────────────── ACTIVE VOICE COMMANDS ───────────────
 //
@@ -955,6 +959,37 @@ void gameMove(int direction) {
   if(game_position > game_max) game_position = game_max;
 
   drawGameUI();
+}
+//Keep eyes in random
+void randomizeFunction() {
+    // Initialize random seed (using an analog pin for randomness)
+    randomSeed(analogRead(0));
+
+    // Generate a random number between 1 and 8
+    int randomChoice = random(0, 6);
+
+    // Call a function based on the random number
+    switch (randomChoice) {
+        case 0:
+          center_eyes(true);
+          break;
+        case 1:
+          move_right_big_eye();
+          break;
+        case 2:
+          move_left_big_eye();
+          break;
+        case 3:      
+          blink(10);
+          blink(10);
+          break;
+        case 4:
+          blink(20);
+          break;
+        case 5:
+          flirt();
+          delay(1000);
+    }
 }
 
 void loop() {
@@ -1031,7 +1066,7 @@ void loop() {
 
     case 64:
       demo_mode = 0;
-  //    flirtive_eye();
+      flirt();
       delay(200);
       heart_eye();
       Serial.println("H',command flag'64");
