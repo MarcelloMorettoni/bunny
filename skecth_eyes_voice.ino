@@ -888,10 +888,10 @@ void dinner_time(int x_offset = 0, int y_offset = 0) {
 //
 //  ID    Trained Command Phrase          → Function Called
 //  -----------------------------------------------------
-//   1    (custom internal)               → happy_eye(), demo_mode = 3
-//   2    (custom internal)               → happy_eye(), demo_mode = 2
+//   1    Hello, robot                    → happy_eye(), demo_mode = 2
+//   2    Hi, Bunny!                      → happy_eye(), demo_mode = 2
 //
-//   5    (custom internal)               → sleeping_eye(), sleep(), blink_sound = 0
+//   5    Sleeping time!                  → sleeping_eye(), sleep(), blink_sound = 0
 //
 //  36    face recognition                → draw_bianca_heart()
 //
