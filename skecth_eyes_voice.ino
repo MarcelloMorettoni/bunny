@@ -60,6 +60,22 @@ void siren_alert(){
   }
 }
 
+void playHeartSound() {
+
+  // Soft sparkle up
+  tone(buzzer, 600, 70);
+  delay(80);
+  tone(buzzer, 800, 70);
+  delay(80);
+  tone(buzzer, 1000, 70);
+  delay(80);
+
+  // Warm ending tone
+  tone(buzzer, 1400, 200);
+  delay(200);
+
+  noTone(buzzer);
+}
 
 void draw_eyes(bool update=true)
 {
@@ -349,6 +365,8 @@ void heart_eye() {
   // optional: clear old shapes to avoid mix
   display.clearDisplay();
   display.display();
+
+  playHeartSound();
 
   for (int i = 0; i < steps; i++) {
     // fade-in or build hearts gradually
@@ -805,53 +823,181 @@ void happy_sound(){
   noTone(buzzer);
 }
 
+void draw_bianca_heart() {
+
+  display.clearDisplay();
+  display.setTextColor(SSD1306_WHITE);
+
+  // --- Draw "BIANCA" ---
+  display.setTextSize(2);  // Medium size
+  int textWidth = 6 * 2 * 6;      // 6 letters, 6px each, size 2
+  int x = (SCREEN_WIDTH - textWidth) / 2;
+  int y = 10;
+
+  display.setCursor(x, y);
+  display.print("BIANCA");
+
+  // --- Draw Heart Underneath ---
+  int heartX = SCREEN_WIDTH / 2;
+  int heartY = 40;
+  int heartSize = 8;
+
+  // Two circles (top of the heart)
+  display.fillCircle(heartX - heartSize/2, heartY - heartSize/2, heartSize/2, SSD1306_WHITE);
+  display.fillCircle(heartX + heartSize/2, heartY - heartSize/2, heartSize/2, SSD1306_WHITE);
+
+  // Triangle (bottom point)
+  display.fillTriangle(
+    heartX - heartSize, heartY - heartSize/4,
+    heartX + heartSize, heartY - heartSize/4,
+    heartX,            heartY + heartSize,
+    SSD1306_WHITE
+  );
+
+  display.display();
+}
+
+void dinner_time(int x_offset = 0, int y_offset = 0) {
+  display.clearDisplay();
+
+  // ----- PLATE -----
+  display.drawCircle(64 + x_offset, 32 + y_offset, 18, SSD1306_WHITE); // outer plate
+  display.drawCircle(64 + x_offset, 32 + y_offset, 10, SSD1306_WHITE); // inner plate
+
+
+  // ----- KNIFE (right) -----
+  display.drawLine(90 + x_offset, 18 + y_offset, 90 + x_offset, 48 + y_offset, SSD1306_WHITE);
+  display.drawLine(86 + x_offset, 18 + y_offset, 90 + x_offset, 18 + y_offset, SSD1306_WHITE);
+
+
+  // ----- FORK (left) -----
+  // Handle
+  display.drawLine(38 + x_offset, 18 + y_offset, 38 + x_offset, 48 + y_offset, SSD1306_WHITE);
+
+  // Fork prongs (4 lines to match style)
+  display.drawLine(34 + x_offset, 18 + y_offset, 34 + x_offset, 30 + y_offset, SSD1306_WHITE);
+  display.drawLine(36 + x_offset, 18 + y_offset, 36 + x_offset, 30 + y_offset, SSD1306_WHITE);
+  display.drawLine(40 + x_offset, 18 + y_offset, 40 + x_offset, 30 + y_offset, SSD1306_WHITE);
+  display.drawLine(42 + x_offset, 18 + y_offset, 42 + x_offset, 30 + y_offset, SSD1306_WHITE);
+
+  display.display();
+}
+
 
 // ─────────────── ACTIVE VOICE COMMANDS ───────────────
-//  ID    Command Phrase              →   Function
-//  ----------------------------------------------------
-//   1    (custom internal)           →   happy_eye(), demo_mode = 3
-//   2    (custom internal)           →   happy_eye(), demo_mode = 2
-//   5    (custom internal)           →   sleeping_eye(), sleep()
-//  57    Display number five         →   countdown(5)
-//  62    Display smiley face         →   happy_eye()
-//  63    Display crying face         →   sad_eye()
-//  64    Display heart               →   heart_eye()
-// 103    Turn on the light           →   happy_eye()
-// 104    Turn off the light          →   demo_mode = 2
-// 116    Set to red                  →   angry_eye()
+//
+//  ID    Trained Command Phrase          → Function Called
+//  -----------------------------------------------------
+//   1    (custom internal)               → happy_eye(), demo_mode = 3
+//   2    (custom internal)               → happy_eye(), demo_mode = 2
+//
+//   5    (custom internal)               → sleeping_eye(), sleep(), blink_sound = 0
+//
+//  36    face recognition                → draw_bianca_heart()
+//
+//  57    Display number five             → countdown(5)
+//  62    Display smiley face             → happy_eye()
+//  63    Display crying face             → sad_eye()
+//  64    Display heart                   → heart_eye(), demo_mode = 0 then demo_mode = 2
+//
+//  90    Turn on the speaker             → blink_sound = 1
+//  91    Turn off the speaker            → blink_sound = 0
+//
+// 103    Turn on the light               → happy_eye()
+// 104    Turn off the light              → demo_mode = 2
+//
+// 116    Set to red                      → angry_eye()
+//
+//   6    Bianca                          → draw_bianca_heart()
+//  10    dinner time                     → dinner_time()
+//  11    lunch time                      → dinner_time()
+//
+//   7    be happy                        → happy_eye()
+//   9    start timer                     → ✖ (reserved — no function assigned yet)
+//
+//  12    play a game                     → game_mode = true, demo_mode = 0, drawGameUI()
+//
+//  22    retreat                         → gameMove(-1) (only if game_mode == true)
+//  23    go forward                      → gameMove(+1) (only if game_mode == true)
+//
 // ─────────────────────────────────────────────────────
 
 
-void loop() {
 
+bool game_mode = false;
+
+int game_position = 64;  // middle
+const int game_min = 5;
+const int game_max = 120;
+
+void drawGameUI() {
+  display.clearDisplay();
+
+  // Game title
+  display.setTextSize(1);
+  display.setCursor(0,0);
+  display.print("GAME MODE");
+
+  // Slider track
+  display.drawRect(5, 30, 118, 10, SSD1306_WHITE);
+
+  // Movable block
+  display.fillRect(game_position, 31, 8, 8, SSD1306_WHITE);
+
+  display.display();
+}
+
+void gameMove(int direction) {
+  game_position += direction * 5;
+
+  // Bounds
+  if(game_position < game_min) game_position = game_min;
+  if(game_position > game_max) game_position = game_max;
+
+  drawGameUI();
+}
+
+void loop() {
+  noTone(buzzer);
   // put your main code here, to run repeatedly:
   uint8_t CMDID = asr.getCMDID();
   switch (CMDID) {
     case 1:
-      happy_eye();                                                          
+      tone(buzzer, 400, 30);  
+      happy_eye();                                                       
       Serial.println("LISTENING',command flag'1'");  
       delay(500);
-      demo_mode = 3;
+      demo_mode = 2;
+      if (game_mode) {
+      tone(buzzer, 300, 100);
+      game_mode = false;
+      center_eyes();
+      Serial.println("Exited GAME MODE");
+    }
       break;
     case 2:
-      happy_eye();                                                          
+      tone(buzzer, 400, 30);
+      happy_eye();                                                      
       Serial.println("LISTENING',command flag'1'");  
       delay(500);
       demo_mode = 2;
       break;
     case 116:
+      tone(buzzer, 400, 30);  
       angry_eye();
       delay(500);
       demo_mode = 2;                                                               
       break;
 
     case 62:
+      tone(buzzer, 400, 30);  
       happy_eye();
       delay(500);
       demo_mode = 2;                                                                         
       break;
 
     case 63:
+      tone(buzzer, 400, 30);  
       sad_eye();
       delay(500);
       demo_mode = 2;                                                                         
@@ -867,17 +1013,33 @@ void loop() {
       delay(1500);
       break;
 
+    case 6:
+      draw_bianca_heart();                        
+      delay(1500);
+      break;
+
+    case 10:
+      dinner_time();                        
+      delay(1500);
+      break;
+
+    case 11:
+      dinner_time();                        
+      delay(1500);
+      break;
+
+
     case 64:
       demo_mode = 0;
-      flirtive_eye();
+  //    flirtive_eye();
       delay(200);
       heart_eye();
       Serial.println("H',command flag'64");
       delay(1500);                                                                
-      //demo_mode = 2;   
+      demo_mode = 2;   
       break;
 
-    case 103:                                                  
+    case 7:                                                  
       happy_eye();                               
       Serial.println("received'Turn on the light',command flag'103'");  
       break;
@@ -889,6 +1051,42 @@ void loop() {
 
     case 57:
       countdown(5);
+      break;
+// Turn on the speaker
+    case 90:
+      blink_sound = 1;
+      break;
+// turn off the speaker
+    case 91:
+      blink_sound = 0;
+      break;
+// face recognition
+    case 36:
+      draw_bianca_heart();
+      delay(1500);
+      break;
+    case 12:   // "Play game" (you said this one means game mode)
+      tone(buzzer, 500, 100);
+      game_mode = true;
+      demo_mode=0;
+      drawGameUI();
+      Serial.println("Entering GAME MODE");
+      break;
+    
+    case 22:   // Go forward
+      if (game_mode) {
+        tone(buzzer, 700, 40);
+        gameMove(1);
+        Serial.println("Forward");
+      }
+      break;
+    
+    case 23:   // Retreat
+      if (game_mode) {
+        tone(buzzer, 400, 40);
+        gameMove(-1);
+        Serial.println("Retreat");
+      }
       break;
 
     default:
