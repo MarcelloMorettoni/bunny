@@ -33,6 +33,6 @@ Arduino A5 (SCL) o-----------------------------o OLED SCL
 ## Usage
 
 1. Connect the hardware as shown above.
-2. Upload `eye-sketch.ino` to the microcontroller.
+2. Upload `eyes-sketch.ino` to the microcontroller.
 3. Open a serial monitor at 115200 baud to observe debug messages when the button is pressed.
 4. Tap the button to cycle through expressions. Hold the button for approximately five seconds to re-enable random playback.
